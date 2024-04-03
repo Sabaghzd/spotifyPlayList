@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <title>Spotify Playlist Analyzer</title>
+</head>
+<body>
+<h1>Spotify Playlist Creator</h1>
+<form action="/search" method="post" onsubmit="return validateForm()">
+    <label for="queryn">Search for a Playlist</label>
+    <input type="text" id="queryn" name="queryn">
+    <br>
+    <label for="queryd">Or Simply Just Describe it!</label>
+    <input type="text" id="queryd" name="queryd">
+
+    <label for="number">How Many Songs Do You Want In Your Playlist?</label>
+    <input type="text" id="number" name="number">
+
+    <button type="submit">Search</button>
+
+</form>
+<script>
+    function validateForm() {
+        var queryInput = document.getElementById("queryn").value.trim();
+        if (queryInput === "") {
+            queryInput = document.getElementById("queryd").value.trim();
+        }
+
+        if (queryInput === "") {
+            alert("Please enter a playlist name or description.");
+            return false; // Prevent form submission
+        }
+
+        return true; // Allow form submission
+    }
+
+    var number = document.getElementById("number").value.trim();
+
+</script>
+</body>
+</html>

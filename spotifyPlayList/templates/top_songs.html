@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <title>Create Playlist</title>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+</head>
+<body>
+<h1>Create Playlist</h1>
+<form id="playlistForm" action="/create_playlist" method="post" onsubmit="return validateForm()">
+    <label for="playlist_name">Playlist Name:</label>
+    <input type="text" id="playlist_name" name="playlist_name"><br><br>
+    <h2>Top Songs:</h2>
+    <ul>
+        {% if top_songs %}
+        {% for song in top_songs %}
+        <li>
+            <input type="checkbox" class="song-checkbox" id="{{ song.id }}" name="top_songs" value="{{ song.uri }}">
+            <label for="{{ song.id }}">{{ song.name }} by {{ song.artist }}</label>
+            <br>
+            <div class="spotify-player" data-uri="{{ song.uri }}"></div> <!-- Added div for Spotify player -->
+        </li>
+        {% endfor %}
+        {% else %}
+        <li>No top songs found.</li>
+        {% endif %}
+    </ul>
+    <!-- Hidden input field to collect checked songs -->
+    <input type="hidden" id="checked_songs" name="checked_songs" value="">
+    <div class="select-all-wrapper">
+        <label class="checkbox-container">
+            <input type="checkbox" id="sAll" name="sAll" value="sAll" onchange="selectAllSongs()">
+            <span class="checkmark"></span>
+            Select All
+        </label>
+    </div>
+    <button type="submit">Create Playlist</button>
+    <div id="embed-iframe"></div>
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+</form>
+
+<script>
+    function validateForm() {
+        var playlistNameInput = document.getElementById("playlist_name").value.trim();
+
+        if (playlistNameInput === "") {
+            alert("Please enter a playlist name.");
+            return false; // Prevent form submission
+        }
+
+        // Get all checked checkboxes
+        var checkboxes = document.querySelectorAll('.song-checkbox:checked');
+        if (checkboxes.length === 0) {
+            alert("Please select at least one song.");
+            return false; // Prevent form submission
+        }
+
+        // Extract the values (song IDs or URIs) from the checked checkboxes
+        var checkedSongURIs = [];
+        checkboxes.forEach(function(checkbox) {
+            checkedSongURIs.push(checkbox.value);
+        });
+
+        // Set the value of the hidden input field to the checked song URIs
+        document.getElementById('checked_songs').value = checkedSongURIs.join(',');
+
+        return true; // Allow form submission
+    }
+
+    function selectAllSongs() {
+        var checkboxes = document.querySelectorAll('.song-checkbox');
+        var selectAllCheckbox = document.getElementById('sAll');
+        checkboxes.forEach(function(checkbox) {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
+    }
+
+    window.onSpotifyIframeApiReady = (IFrameAPI) => {
+        const spotifyPlayers = document.querySelectorAll('.spotify-player');
+        spotifyPlayers.forEach(function(player) {
+            const uri = player.getAttribute('data-uri');
+            const options = {
+                uri: uri,
+                view: 'list',
+                theme: 'black',
+                width: 500, // Set the width (in pixels) for the player
+                height: 200 // Set the height (in pixels) for the player
+            };
+            const callback = (EmbedController) => {};
+            IFrameAPI.createController(player, options, callback);
+        });
+    };
+</script>
+</body>
+</html>
