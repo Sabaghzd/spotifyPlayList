@@ -3,7 +3,7 @@ import json
 
 # Set your API key
 def promptgpt (prompt):
-    openai.api_key = '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'
+    openai.api_key = '<your-api-key>'
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         messages=[
